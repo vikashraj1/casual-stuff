@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamic Table</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f0f0;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    #container {
+      max-width: 800px;
+      margin: 20px auto;
+      background-color: #fff;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    label {
+      display: block;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+      padding: 0px; /* Adjust padding as needed */
+    }
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 16px;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #4caf50;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 16px;
+      text-align: center;
+    }
+    tbody tr:hover {
+      background-color: #f5f5f5;
+    }
+    .right {
+      background-color: #9FFFA7;
+    }
+    .wrong {
+      background-color: #FFA79F;
+    }
+    #totals {
+      margin-top: 20px;
+      text-align: center;
+    }
+    #totals p {
+      font-weight: bold;
+      font-size: 18px;
+      color: #333;
+    }
+    #printTable {
+      display: block;
+      margin: 20px auto;
+    }
+  </style>
+</head>
+<body>
+
+<div id="container">
+  <h1 id="headingTitle">Wrong Right Notebook</h1>
+  <label for="editTitle">Edit Title:</label>
+  <input type="text" id="editTitle" value="Wrong Right Notebook">
+  <button id="updateTitle">Update Title</button>
+
+  <label for="rowCount">Enter the number of rows:</label>
+  <input type="number" id="rowCount" min="1" value="3">
+  <button id="generateTable">Generate Table</button>
+
+  <table id="dynamicTable">
+    <thead>
+      <tr>
+        <th>Serial Number</th>
+        <th>Right</th>
+        <th>Wrong</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+
+  <div id="totals">
+    <p>Total Right: <span id="totalRight">0</span></p>
+    <p>Total Wrong: <span id="totalWrong">0</span></p>
+  </div>
+
+  <button id="printTable">Print</button>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+  var selectedValues = [];
+  var headingTitle = $("#headingTitle");
+
+  function generateTable() {
+    var rowCount = parseInt($('#rowCount').val()) || 3;
+    var tableBody = $('#dynamicTable tbody');
+
+    tableBody.empty();
+
+    for (var i = 1; i <= rowCount; i++) {
+      var newRow = $('<tr>').append(
+        $('<td>').text(i),
+        $('<td>').append($('<label><input type="radio" name="row' + i + '" class="right"></label>')),
+        $('<td>').append($('<label><input type="radio" name="row' + i + '" class="wrong"></label>'))
+      );
+      tableBody.append(newRow);
+    }
+
+    updateTotals();
+  }
+
+  $("body").on("click", "tbody tr td:nth-child(2) label, tbody tr td:nth-child(3) label", function() {
+    $(this).parent().siblings().find('label').removeClass('right wrong');
+    if ($(this).find('input').hasClass('right')) {
+      $(this).parent().addClass('right').siblings().removeClass('wrong');
+    } else {
+      $(this).parent().addClass('wrong').siblings().removeClass('right');
+    }
+
+    updateTotals();
+  });
+
+  function updateTotals() {
+    var totalRight = $('input.right:checked').length;
+    var totalWrong = $('input.wrong:checked').length;
+
+    $('#totalRight').text(totalRight);
+    $('#totalWrong').text(totalWrong);
+  }
+
+  $("#generateTable").on("click", function() {
+    generateTable();
+  });
+
+  $("#printTable").on("click", function() {
+    window.print();
+  });
+
+  $("#updateTitle").on("click", function() {
+    var newTitle = $("#editTitle").val();
+    headingTitle.text(newTitle);
+  });
+
+  generateTable();
+});
+</script>
+
+</body>
+</html>
